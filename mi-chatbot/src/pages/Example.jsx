@@ -38,6 +38,15 @@ const Example = () => {
                     ))
                 )}
             </ConversationCard>
+            <FormContainer onSubmit={handleSubmit}>
+                <InputField
+                    type="text"
+                    placeholder="Enter your text here"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                />
+                <SubmitButton type="submit">Submit</SubmitButton>
+            </FormContainer>
         </MainBody>
     );
 };
