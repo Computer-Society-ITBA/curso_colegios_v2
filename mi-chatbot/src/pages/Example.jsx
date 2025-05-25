@@ -6,16 +6,30 @@ import Header from '../components/body/Header';
 import MainBody from '../components/body/MainBody';
 import ConversationCard from '../components/textOutput/conversationCard';
 import { BubbleContainer, SenderBubble, ReceiverBubble } from '../components/textOutput/MessageBubble';
+import axios from 'axios';
+
+const RESPONSE_ID = Math.floor(Math.random()*100000000);
 
 const Example = () => {
     const [messages, setMessages] = useState([]);
     const [inputValue, setInputValue] = useState("");
     const conversationRef = useRef(null);
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
       e.preventDefault();
       if (inputValue.trim()) {
         setMessages([...messages, { text: inputValue, isSender: true }]);
         setInputValue("");
+        try {
+            const response = await axios.post('http://localhost:3001/chat', {
+                ID: (RESPONSE_ID).toString(),
+                personality: 'Default personality',
+                message: inputValue
+            });
+            const { responseType, content } = response.data;
+            setMessages(prevMessages => [...prevMessages, { text: content, isSender: false, responseType: responseType }]);
+        } catch (error) {
+            console.error('Error sending message:', error);
+        }
       }
     };
     useEffect(() => {
@@ -33,7 +47,7 @@ const Example = () => {
                 ) : (
                     messages.map((msg, index) => (
                         <BubbleContainer key={index}>
-                            {msg.isSender ? ( <><SenderBubble>{msg.text}</SenderBubble> <ReceiverBubble>...</ReceiverBubble></> ) : ( <ReceiverBubble>{msg.text}</ReceiverBubble>)}
+                            {msg.isSender ? ( <SenderBubble>{msg.text}</SenderBubble> ): ( <ReceiverBubble>{msg.text}</ReceiverBubble>)}
                         </BubbleContainer>
                     ))
                 )}
