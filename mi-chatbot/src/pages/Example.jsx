@@ -13,7 +13,8 @@ const RESPONSE_ID = Math.floor(Math.random()*100000000);
 const Example = () => {
     const [messages, setMessages] = useState([]);
     const [inputValue, setInputValue] = useState("");
-    const conversationRef = useRef(null);
+    const listRef = useRef();
+    const rowHeights = useRef({});
     const handleSubmit = async (e) => {
       e.preventDefault();
       if (inputValue.trim()) {
@@ -32,25 +33,56 @@ const Example = () => {
         }
       }
     };
-    useEffect(() => {
-        if (conversationRef.current) {
-          conversationRef.current.scrollTop = conversationRef.current.scrollHeight;
-        }
-      }, [messages]);
+    const handleImageLoad = (index) => {
+      setMessages((prevMessages) => {
+        const updatedMessages = [...prevMessages];
+        updatedMessages[index].imageLoaded = true;
+        return updatedMessages;
+      });
+    };
+
+    const getRowHeight = useCallback((index) => {
+        return rowHeights.current[index] ? rowHeights.current[index] + 20 : 100;
+    }, []);
+
+    const Row = ({ index, style }) => {
+        const msg = messages[index];
+        const rowRef = useRef();
+        useEffect(() => {
+            if (rowRef.current) {
+                const height = rowRef.current.getBoundingClientRect().height;
+                rowHeights.current[index] = height;
+                listRef.current.resetAfterIndex(index);
+            }
+        }, [index, msg, msg.imageLoaded]);
+        return (
+            <div style={style}>
+                <div ref={rowRef}>
+                    <BubbleContainer key={index}>
+                        {msg.isSender ? (
+                            <SenderBubble>{msg.text}</SenderBubble>
+                        ) : (
+                            <ReceiverBubble content={msg.text} responseType={msg.responseType} handleLoad={() => handleImageLoad(index)}/>
+                        )}
+                    </BubbleContainer>
+                </div>
+            </div>
+        );
+    };
 
     return(
         <MainBody>
             <Header>Hola mundo</Header>
-            <ConversationCard ref={conversationRef}>
-                {messages.length === 0 ? (
-                    <p>No messages yet.</p>
-                ) : (
-                    messages.map((msg, index) => (
-                        <BubbleContainer key={index}>
-                            {msg.isSender ? ( <SenderBubble>{msg.text}</SenderBubble> ): ( <ReceiverBubble>{msg.text}</ReceiverBubble>)}
-                        </BubbleContainer>
-                    ))
-                )}
+            <ConversationCard>
+                <List
+                    height={700}
+                    itemCount={messages.length}
+                    itemSize={getRowHeight}
+                    width={'100%'}
+                    ref={listRef}
+                >
+                    {Row}
+                </List>
             </ConversationCard>
             <FormContainer onSubmit={handleSubmit}>
                 <InputField

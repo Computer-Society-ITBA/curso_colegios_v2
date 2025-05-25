@@ -29,10 +29,20 @@ app.post('/chat', async (req, res) => {
                 content: jsonResponse.content
             });
         } else if (jsonResponse.hasOwnProperty('responseType') && jsonResponse.responseType === 'IMAGE') {
-            res.json({
-                content: 'No tengo la capacidad de mostrar imágenes todavía',
-                responseType: 'IMAGE'
-            });
+            //url
+            if(typeof jsonResponse.body === 'string' && jsonResponse.body.startsWith('http')){
+                res.json({
+                    responseType: 'IMAGE',
+                    content: jsonResponse.body
+                });
+            } else {
+            //base64
+                const imageBase64 = Buffer.from(jsonResponse.body).toString('base64');
+                res.json({
+                    responseType: 'IMAGE',
+                    content: `data:image/png;base64,${imageBase64}`
+                });
+            }
         } else {
             //default para que no explote
             res.status(400).json({
