@@ -56,6 +56,30 @@ app.post('/chat', async (req, res) => {
     }
 });
 
+app.post('/text-to-speech', async (req, res) => {
+    //audio
+    const { ID, personality, message } = req.body;
+    try {
+        const response = await axios.post(`${CHATBOT_URL}/text-to-speech`, {
+            ID,
+            personality,
+            message
+        }, {
+            responseType: 'arraybuffer'
+        });
+        const audioData64 = Buffer.from(response.data).toString('base64');
+        const audioDataUri = `data:audio/ogg;base64,${audioData64}`;
+
+        res.json({
+            responseType: 'AUDIO',
+            content: audioDataUri
+        });
+    } catch (error) {
+        console.error('Error communicating with the text-to-speech service:', error);
+        res.status(500).json({ error: 'Error communicating with the text-to-speech service' });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });

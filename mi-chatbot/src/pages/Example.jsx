@@ -13,6 +13,7 @@ const RESPONSE_ID = Math.floor(Math.random()*100000000);
 const Example = () => {
     const [messages, setMessages] = useState([]);
     const [inputValue, setInputValue] = useState("");
+    const [personalityValue, setPersonalityValue] = useState("");
     const listRef = useRef();
     const rowHeights = useRef({});
     const handleSubmit = async (e) => {
@@ -23,7 +24,25 @@ const Example = () => {
         try {
             const response = await axios.post('http://localhost:3001/chat', {
                 ID: (RESPONSE_ID).toString(),
-                personality: 'Default personality',
+                personality: personalityValue === "" ? 'Default Personality' : personalityValue,
+                message: inputValue
+            });
+            const { responseType, content } = response.data;
+            setMessages(prevMessages => [...prevMessages, { text: content, isSender: false, responseType: responseType }]);
+        } catch (error) {
+            console.error('Error sending message:', error);
+        }
+      }
+    };
+    const handleTextToSpeech = async (e) => {
+      e.preventDefault();
+      if (inputValue.trim()) {
+        setMessages([...messages, { text: inputValue, isSender: true }]);
+        setInputValue("");
+        try {
+            const response = await axios.post('http://localhost:3001/text-to-speech', {
+                ID: (RESPONSE_ID).toString(),
+                personality: personalityValue === "" ? 'Default Personality' : personalityValue,
                 message: inputValue
             });
             const { responseType, content } = response.data;
@@ -73,6 +92,12 @@ const Example = () => {
     return(
         <MainBody>
             <Header>Hola mundo</Header>
+            <InputField
+                type="text"
+                placeholder="¿Qué personalidad tengo?"
+                value={personalityValue}
+                onChange={(e) => setPersonalityValue(e.target.value)}
+            />
             <ConversationCard>
                 <List
                     height={700}
@@ -92,6 +117,7 @@ const Example = () => {
                     onChange={(e) => setInputValue(e.target.value)}
                 />
                 <SubmitButton type="submit">Submit</SubmitButton>
+                <SubmitButton type="button" onClick={handleTextToSpeech}>¡Text-To-Speech!</SubmitButton>
             </FormContainer>
         </MainBody>
     );

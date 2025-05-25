@@ -81,6 +81,14 @@ const ReceiverBubble = memo(({ content, handleLoad, responseType }) => {
         </ReactMarkdown>
         );
     }
+    else if (responseType === 'AUDIO') {
+      return (
+        <audio controls>
+          <source src={content} type="audio/ogg" />
+          El browser no soporta el formato de audio!
+        </audio>
+      );
+    }
     return null;
   };
 
