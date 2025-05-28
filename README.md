@@ -831,7 +831,7 @@ Vamos a modificar los siguientes archivos:
 
 * `MessageBubble.jsx`:
 ```jsx
-import colors from "../utils/colorPallete";
+import colors from "../utils/colorPalette";
 import styled from "styled-components";
 // AGREGO +++++++++++++++++++++++++++++++++++++++++++++++
 import React, { memo } from 'react';
@@ -1389,7 +1389,7 @@ Ahora sólo queda agregar el comportamiento en la aplicación:
 
 * `MessageBubble.jsx`:
 ```js
-import colors from "../utils/colorPallete";
+import colors from "../utils/colorPalette";
 import styled from "styled-components";
 import React, { memo } from 'react';
 import ReactMarkdown from 'react-markdown';
