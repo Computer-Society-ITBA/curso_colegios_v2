@@ -969,7 +969,7 @@ const Example = () => {
     const rowHeights = useRef({});
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
       e.preventDefault();
       if (inputValue.trim()) {
         setMessages([...messages, { text: inputValue, isSender: true }]);
@@ -1184,7 +1184,7 @@ const Example = () => {
     const listRef = useRef();
     const rowHeights = useRef({});
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
       e.preventDefault();
       if (inputValue.trim()) {
         setMessages([...messages, { text: inputValue, isSender: true }]);
@@ -1511,7 +1511,7 @@ const Example = () => {
     const listRef = useRef();
     const rowHeights = useRef({});
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
       e.preventDefault();
       if (inputValue.trim()) {
         setMessages([...messages, { text: inputValue, isSender: true }]);
